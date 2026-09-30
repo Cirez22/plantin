@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Cómo funciona — Plantín</title>
+  <meta name="theme-color" content="#0d2419">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%230d2419'/><text x='50' y='68' font-size='58' text-anchor='middle' fill='%23f4efe4' font-family='Georgia,serif' font-style='italic'>P</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <main>
+    <section class="head-oscuro">
+      <div class="wrap">
+        <span class="eyebrow">Cómo funciona</span>
+        <h1>Tres pasos, <em>ningún intermediario.</em></h1>
+        <p class="lead">Plantín junta los catálogos. La venta sigue siendo entre vos y el vivero, como siempre fue.</p>
+      </div>
+      <span class="ho-deco h1" data-forma="star" data-color="#D4A03A" aria-hidden="true"></span>
+      <span class="ho-deco h2" data-forma="scallop" data-color="#A9552F" aria-hidden="true"></span>
+      <span class="ho-deco h3" data-forma="clover" data-color="#76866A" aria-hidden="true"></span>
+    </section>
+
+    <section class="wrap cf-pasos">
+      <div class="cf-paso p1">
+        <div class="cf-txt">
+          <span class="paso-n"><span data-forma="star" data-color="#14241A"></span><b>1</b></span>
+          <h3>Buscás la planta</h3>
+          <p>Por nombre, por categoría o por zona. Ves la foto y de qué vivero es, todo en el mismo lugar.</p>
+          <a class="link-arrow" href="categoria.html">Ir al catálogo →</a>
+        </div>
+        <div class="cf-vis vis-busca" aria-hidden="true">
+          <div class="mock-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>monstera<i></i></div>
+          <div class="mock-foto"><img src="img/monstera-sm.jpg" alt=""></div>
+        </div>
+      </div>
+      <svg class="cf-flecha f1" viewBox="0 0 120 80" aria-hidden="true"><path d="M10 10 C60 0 90 30 80 70"/><path d="M68 60 L80 72 L90 58"/></svg>
+      <div class="cf-paso p2">
+        <div class="cf-txt">
+          <span class="paso-n"><span data-forma="scallop" data-color="#14241A"></span><b>2</b></span>
+          <h3>Ves qué vivero la tiene</h3>
+          <p>Cada vivero tiene su ficha y su cartel: dónde está, hace cuánto que trabaja y todo lo que vende, con sus precios.</p>
+          <a class="link-arrow" href="viveros.html">Ver los viveros →</a>
+        </div>
+        <div class="cf-vis vis-vivero" id="visVivero" aria-hidden="true"></div>
+      </div>
+      <svg class="cf-flecha f2" viewBox="0 0 120 80" aria-hidden="true"><path d="M110 10 C60 0 30 30 40 70"/><path d="M30 58 L40 72 L52 60"/></svg>
+      <div class="cf-paso p3">
+        <div class="cf-txt">
+          <span class="paso-n"><span data-forma="clover" data-color="#14241A"></span><b>3</b></span>
+          <h3>Le pedís por WhatsApp</h3>
+          <p>Armás el carrito y te abrimos el chat con el vivero, con el pedido ya escrito. Pagás y coordinás la entrega con ellos.</p>
+          <a class="link-arrow" href="carrito.html">Ver mi carrito →</a>
+        </div>
+        <div class="cf-vis vis-chat" aria-hidden="true">
+          <div class="chat-top"><span class="chat-av"></span><b id="chatNombre"></b></div>
+          <div class="chat-msg" id="chatMsg"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="for-viveros" id="viveros">
+      <div class="wrap inner">
+        <div>
+          <span class="eyebrow">Para viveros</span>
+          <h2>Tu catálogo, <em>al lado de los mejores.</em></h2>
+          <p style="opacity:.8;font-size:17px;max-width:44ch;margin-top:20px">Vos ya tenés las plantas y los clientes del barrio. Plantín te suma los que hoy no saben que existís: los que buscan "monstera" en el teléfono y terminan comprando en un supermercado.</p>
+          <div class="cta">
+            <a class="btn btn-light" href="quienes-somos.html#sumate">Agregar mi vivero</a>
+            <a class="btn btn-ghost" style="color:var(--crema);border-color:rgba(244,239,228,.4)" href="viveros.html">Ver cómo queda una ficha</a>
+          </div>
+        </div>
+        <ul>
+          <li><span class="i" data-forma="star" data-color="#D4A03A"></span><div><b>No depende de tus ventas</b><p>No cobramos comisión sobre lo que vendés. Nunca. Lo que vendas por acá es tuyo entero.</p></div></li>
+          <li><span class="i" data-forma="wavy" data-color="#F4F2ED"></span><div><b>El cliente es tuyo</b><p>El pedido te llega directo a tu WhatsApp. Vos cobrás como quieras, entregás como quieras y te quedás con el contacto.</p></div></li>
+          <li><span class="i" data-forma="scallop" data-color="#C98A5E"></span><div><b>Cero trabajo técnico</b><p>Nos mandás fotos y precios por WhatsApp y nosotros armamos tu ficha. Si cambia un precio, nos avisás y lo actualizamos.</p></div></li>
+          <li><span class="i" data-forma="clover" data-color="#8fa88f"></span><div><b>Tu ficha, con tu nombre</b><p>Cada vivero tiene su página propia: foto, historia, zona, catálogo. La gente elige comprarte a vos, no a "una app".</p></div></li>
+        </ul>
+      </div>
+      <div class="wrap vfaq">
+        <h3>Lo que más nos preguntan los viveros</h3>
+        <details open>
+          <summary>¿Cuánto cuesta?</summary>
+          <p>Nada durante el piloto. Después, un fee fijo por mes, siempre el mismo y sin comisión sobre lo que vendas. El monto lo vamos a definir junto con los primeros viveros.</p>
+        </details>
+        <details>
+          <summary>¿Tengo que ser exclusivo de Plantín?</summary>
+          <p>No. Seguís vendiendo en tu local, por Instagram o donde quieras. Plantín es un canal más.</p>
+        </details>
+        <details>
+          <summary>¿Me puedo ir cuando quiera?</summary>
+          <p>Sí, cuando quieras. No hay permanencia ni penalidad: me avisás y bajo tu ficha.</p>
+        </details>
+        <details>
+          <summary>¿Cómo me llegan los clientes?</summary>
+          <p>Directo a tu WhatsApp, con el pedido ya escrito. Hablan con vos, no con Plantín: cobrás y entregás como siempre.</p>
+        </details>
+        <details>
+          <summary>¿Quién carga el catálogo?</summary>
+          <p>En el piloto lo cargo yo, con las fotos y precios que me pases (por WhatsApp está perfecto). Si cambia algo, me avisás y lo actualizo.</p>
+        </details>
+        <details>
+          <summary>¿Por qué sumarme ahora?</summary>
+          <p>Porque sos de los primeros. Entrás sin costo durante el piloto y el fee de después lo definimos con ustedes, no te llega armado.</p>
+        </details>
+      </div>
+    </section>
+
+    <section class="faq">
+      <div class="wrap">
+        <h2>Preguntas <em>frecuentes</em></h2>
+        <details open>
+          <summary>¿Cómo se paga y cómo se entrega?</summary>
+          <p>Como lo hace hoy cada vivero: transferencia, efectivo, Mercado Pago, lo que acuerden por WhatsApp. La entrega también: retiro en el local, envío propio o cadetería. Plantín no toca el pago ni la logística.</p>
+        </details>
+        <details>
+          <summary>¿Qué pasa si no tengo stock de algo?</summary>
+          <p>Le avisás al cliente por el mismo chat, como harías con cualquier consulta. Y nos mandás un mensaje para que lo saquemos del catálogo hasta que vuelva.</p>
+        </details>
+        <details>
+          <summary>¿Qué zonas cubre?</summary>
+          <p>Arrancamos con CABA y Zona Norte del Gran Buenos Aires. La idea es ir sumando zonas a medida que se suman viveros.</p>
+        </details>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/logo.js"></script>
+  <script src="js/carteles.js"></script>
+  <script>
+    function initPage() {
+      const v = vivero('las-canitas'), p = planta('monstera-deliciosa');
+      $('#visVivero').innerHTML = cartel(v) + tagEjemplo(v, 'sobre-foto');
+      $('#chatNombre').textContent = v.nombre;
+      $('#chatMsg').textContent = waMessage(v, [{ p, qty: 1, precio: p.precio, variante: null }]);
+    }
+  </script>
+</body>
+</html>

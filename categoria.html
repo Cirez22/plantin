@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Catálogo — Plantín</title>
+  <meta name="theme-color" content="#0d2419">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%230d2419'/><text x='50' y='68' font-size='58' text-anchor='middle' fill='%23f4efe4' font-family='Georgia,serif' font-style='italic'>P</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <main>
+    <section class="page-head wrap">
+      <span class="eyebrow" id="eyebrow">Catálogo</span>
+      <h1 id="title">Catálogo</h1>
+      <p class="lead muted" id="bajada"></p>
+    </section>
+    <section class="wrap">
+      <div class="filtros" id="filtros"></div>
+      <p class="orden-nota muted" id="ordenNota" hidden></p>
+      <div id="grid"></div>
+    </section>
+  </main>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/logo.js"></script>
+  <script>
+    function initPage() {
+      const q = param('q');
+      const catId = param('c');
+      const cat = catId ? categoria(catId) : null;
+
+      if (q) {
+        $('#eyebrow').textContent = 'Búsqueda';
+        $('#title').innerHTML = `Resultados para <em>“${q.replace(/</g, '&lt;')}”</em>`;
+        document.title = `“${q}” — Plantín`;
+      } else if (cat) {
+        $('#eyebrow').textContent = 'Categoría';
+        $('#title').innerHTML = `${cat.nombre}<span class="ish">${forma(cat.forma, cat.color)}</span>`;
+        $('#bajada').textContent = cat.bajada;
+        document.title = `${cat.nombre} — Plantín`;
+      } else {
+        $('#eyebrow').textContent = 'Catálogo completo';
+        $('#title').innerHTML = 'Todos los <em>productos</em>';
+        $('#bajada').textContent = 'De todos los viveros de Plantín.';
+      }
+
+      // Filtros en un botón "Filtros"; a la derecha, cuántos hay y el orden.
+      const base = q ? searchPlantas(q) : (cat ? PLANTAS.filter(p => p.cat === cat.id) : PLANTAS);
+      const f = { cat: cat ? cat.id : 'todas', zona: Zona.get(), mayorista: false };
+      const grupos = [
+        { key: 'cat', label: 'Categoría', opciones: [{ v: 'todas', t: 'Todo', href: 'categoria.html' }, ...CATEGORIAS.map(c => ({ v: c.id, t: c.nombre, href: `categoria.html?c=${c.id}` }))] },
+        { key: 'zona', label: 'Zona', opciones: [{ v: 'todas', t: 'Todas' }, { v: 'caba', t: 'CABA' }, { v: 'norte', t: 'Zona Norte' }] },
+      ];
+      if (q) grupos.shift(); // en una búsqueda, la categoría no aplica
+      // Sin filtro de precio: los precios se ven solo adentro del catálogo de cada vivero (no se comparan viveros por precio).
+      if (base.some(p => p.mayorista)) grupos.push({ key: 'mayorista', label: 'Pedido', toggle: true, opciones: [{ v: '1', t: 'Por mayor' }] });
+
+      // Orden: destacados o cercanía (nunca por precio). "Cerca tuyo" pide la ubicación una vez por pestaña.
+      const nota = $('#ordenNota');
+      const avisar = txt => { nota.textContent = txt; nota.hidden = !txt; };
+      if (Orden.get() === 'cerca' && !Ubicacion.get()) Orden.set('destacados');
+      const derecha = n => `<span class="fcuenta">${n} ${n === 1 ? 'producto' : 'productos'}</span>
+        <div class="forden" role="group" aria-label="Ordenar">${[['destacados', 'Destacados'], ['cerca', 'Cerca tuyo']]
+          .map(([o, t]) => `<button class="${Orden.get() === o ? 'on' : ''}" data-o="${o}">${t}</button>`).join('')}</div>`;
+      $('#filtros').addEventListener('click', async e => {
+        const b = e.target.closest('[data-o]'); if (!b) return;
+        if (b.dataset.o === 'cerca' && !Ubicacion.get()) {
+          avisar('Buscando tu ubicación…');
+          try { await Ubicacion.pedir(); avisar(''); }
+          catch { avisar('No pudimos saber dónde estás, así que seguimos mostrando los destacados.'); Orden.set('destacados'); render(); return; }
+        }
+        Orden.set(b.dataset.o); render();
+      });
+
+      if (q) Metricas.registrar('buscar', { q: q.trim().toLowerCase().slice(0, 60), n: base.length });
+      else if (cat) Metricas.registrar('ver_categoria', { id: cat.id });
+
+      function render() {
+        Zona.set(f.zona);
+        const list = ordenar(filterByZona(base, f.zona).filter(p => !f.mayorista || p.mayorista));
+        const msg = f.zona === 'todas' && !f.mayorista
+          ? 'Probá con otra búsqueda o mirá el catálogo completo.'
+          : 'No hay productos con esos filtros. Probá sacando alguno.';
+        barra.setDerecha(derecha(list.length));
+        $('#grid').innerHTML = plantGrid(list, msg);
+      }
+      const barra = barraFiltros($('#filtros'), { grupos, estado: f, onChange: render });
+      render();
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Comunidad — Plantín</title>
+  <meta name="theme-color" content="#0d2419">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%230d2419'/><text x='50' y='68' font-size='58' text-anchor='middle' fill='%23f4efe4' font-family='Georgia,serif' font-style='italic'>P</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <main>
+    <section class="arbol-head">
+      <div class="wrap">
+        <span class="eyebrow">Comunidad</span>
+        <h1>El árbol de <em>las plantas.</em></h1>
+        <p class="lead">Cada planta del catálogo tiene familia. Tocá una hoja, enterate de dónde viene y quiénes son sus parientes, y andá armando tu propio árbol.</p>
+        <div class="progreso" id="progreso"></div>
+      </div>
+    </section>
+
+    <section class="wrap arbol-wrap">
+      <div class="arbol" id="arbol"></div>
+    </section>
+
+    <aside class="ficha" id="ficha" hidden aria-live="polite">
+      <button class="ficha-close" aria-label="Cerrar">×</button>
+      <div id="fichaBody"></div>
+    </aside>
+
+    <section class="ideas">
+      <div class="wrap ideas-inner">
+        <div>
+          <span class="eyebrow">Esto recién empieza</span>
+          <h2>¿Qué te gustaría <em>encontrar acá?</em></h2>
+          <p>La comunidad la vamos armando con la gente que quiere a las plantas. Contanos qué te sirve: consejos de cuidado, intercambio de esquejes, encuentros en viveros, lo que sea.</p>
+        </div>
+        <a class="btn btn-wa btn-lg" id="ideaWa" onclick="Metricas.registrar('idea_comunidad')" target="_blank" rel="noopener">Mandanos tu idea</a>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/logo.js"></script>
+  <script src="js/arbol.js"></script>
+  <script>
+    function initPage() {
+      $('#ideaWa').href = waLink(PLANTIN_WHATSAPP, 'Hola Plantín! Tengo una idea para la comunidad: ');
+      $('#ideaWa').insertAdjacentHTML('afterbegin', ICON.wa);
+
+      const hoja = (h, aprendidas) => `
+        <button class="hoja ${aprendidas.has(h.id) ? 'ok' : ''}" data-h="${h.id}" style="--c:${h.rama.color}">
+          <span class="hoja-f">${forma(h.rama.forma, aprendidas.has(h.id) ? h.rama.color : 'none')}</span>
+          <span class="hoja-t">${h.nombre}</span>
+        </button>`;
+
+      function dibujar() {
+        const ap = MiArbol.leer();
+        const col = r => `
+          <div class="rama-col">
+            <div class="nodo nodo-grupo" data-id="g-${r.nombre}" data-parent="${r.nombre === 'Helechos' ? 'raiz' : 'flor'}" style="--c:${r.color}">
+              <span class="nodo-f">${forma(r.forma, r.color)}</span><b>${r.nombre}</b><small>${r.nota}</small>
+            </div>
+            ${r.familias.map(f => `
+              <div class="familia" data-id="f-${f.familia}" data-parent="g-${r.nombre}">
+                <div class="familia-h"><b>${f.familia}</b><span>${f.apodo}</span></div>
+                <div class="hojas">${f.hojas.map(h => hoja(HOJAS.find(x => x.id === h.id), ap)).join('')}</div>
+              </div>`).join('')}
+          </div>`;
+        const [helechos, mono, eudi] = ARBOL.ramas;
+        $('#arbol').innerHTML = `
+          <svg class="arbol-lineas" id="lineas" aria-hidden="true"></svg>
+          <div class="nodo nodo-raiz" data-id="raiz"><b>${ARBOL.nombre}</b><small>${ARBOL.nota}</small></div>
+          <div class="arbol-cols">
+            <div class="arbol-col c-helechos">${col(helechos)}</div>
+            <div class="arbol-col c-flor">
+              <div class="nodo nodo-flor" data-id="flor" data-parent="raiz"><b>Plantas con flor</b><small>Las que dan flores y semillas. Casi todas las plantas que conocés.</small></div>
+              <div class="flor-cols">${col(mono)}${col(eudi)}</div>
+            </div>
+          </div>`;
+        progreso(ap);
+        requestAnimationFrame(lineas);
+      }
+
+      // Líneas del árbol: de cada nodo a su padre, como en un árbol genealógico.
+      function lineas() {
+        const svg = $('#lineas'), box = $('#arbol').getBoundingClientRect();
+        svg.setAttribute('width', box.width); svg.setAttribute('height', box.height);
+        const pos = el => { const r = el.getBoundingClientRect(); return { x: r.left - box.left, y: r.top - box.top, w: r.width, h: r.height }; };
+        svg.innerHTML = $$('[data-parent]', $('#arbol')).map(el => {
+          const padre = $(`[data-id="${el.dataset.parent}"]`, $('#arbol')); if (!padre) return '';
+          const a = pos(padre), b = pos(el);
+          const esFamilia = el.classList.contains('familia');
+          const x1 = esFamilia ? a.x + 18 : a.x + a.w / 2, y1 = a.y + a.h;   // sale de abajo del padre
+          const x2 = esFamilia ? b.x : b.x + b.w / 2, y2 = esFamilia ? b.y + 22 : b.y;
+          const d = esFamilia
+            ? `M${x1} ${y1} V${y2 - 14} Q${x1} ${y2} ${x1 + 14} ${y2} H${x2}`
+            : `M${x1} ${y1} C${x1} ${(y1 + y2) / 2} ${x2} ${(y1 + y2) / 2} ${x2} ${y2}`;
+          return `<path d="${d}"/>`;
+        }).join('');
+      }
+      addEventListener('resize', () => requestAnimationFrame(lineas));
+
+      function progreso(ap) {
+        const n = HOJAS.filter(h => ap.has(h.id)).length;
+        $('#progreso').innerHTML = `
+          <div class="prog-txt"><b>Tu árbol: ${n} de ${HOJAS.length} hojas</b>${n === 0 ? 'Empezá por la planta que tengas en casa.' : n === HOJAS.length ? '¡Lo completaste! Sos parte de la familia.' : 'Seguí tocando hojas para completarlo.'}</div>
+          <div class="prog-hojas">${HOJAS.map(h => `<span class="${ap.has(h.id) ? 'ok' : ''}" title="${ap.has(h.id) ? h.nombre : '¿?'}">${forma(h.rama.forma, ap.has(h.id) ? h.rama.color : 'rgba(244,239,228,.18)')}</span>`).join('')}</div>
+          ${n ? '<button class="prog-reset" id="reset">Empezar de nuevo</button>' : ''}`;
+        const r = $('#reset'); if (r) r.onclick = () => { MiArbol.reiniciar(); dibujar(); };
+      }
+
+      function abrir(id) {
+        const h = HOJAS.find(x => x.id === id); if (!h) return;
+        const nueva = !MiArbol.leer().has(id);
+        MiArbol.aprender(id);
+        Metricas.registrar('arbol_hoja', { id, nueva });
+        const p = h.planta && planta(h.planta);
+        const parientes = h.familia.hojas.filter(x => x.id !== id);
+        const linaje = ['Plantas', h.rama.nombre === 'Helechos' ? null : 'Plantas con flor', h.rama.nombre, h.familia.familia].filter(Boolean);
+        $('#fichaBody').innerHTML = `
+          <div class="ficha-top" style="--c:${h.rama.color}">
+            <span class="ficha-f">${forma(h.rama.forma, h.rama.color)}</span>
+            ${p ? `<img src="${img(p.img, 'lg')}" alt="${h.nombre}">` : ''}
+          </div>
+          ${nueva ? '<div class="ficha-nueva">¡Nueva hoja en tu árbol!</div>' : ''}
+          <h2>${h.nombre}</h2>
+          <div class="ficha-latin">${h.latin}</div>
+          <div class="ficha-linaje">${linaje.map(x => `<span>${x}</span>`).join('<i>›</i>')}</div>
+          <p class="ficha-dato">${h.dato}</p>
+          <dl>
+            <div><dt>De dónde viene</dt><dd>${h.origen}</dd></div>
+            <div><dt>Familia</dt><dd>${h.familia.familia} · ${h.familia.apodo.toLowerCase()}</dd></div>
+            ${parientes.length ? `<div><dt>Sus parientes acá</dt><dd>${parientes.map(x => `<button class="link-hoja" data-h="${x.id}">${x.nombre}</button>`).join(', ')}</dd></div>` : ''}
+          </dl>
+          ${p ? `<a class="btn btn-block" href="planta.html?id=${p.id}">Verla en los viveros →</a>` : ''}`;
+        const f = $('#ficha'); f.hidden = false; f.scrollTop = 0;
+        dibujar();
+      }
+
+      $('#arbol').onclick = e => { const b = e.target.closest('[data-h]'); if (b) abrir(b.dataset.h); };
+      $('#ficha').onclick = e => {
+        if (e.target.closest('.ficha-close')) { $('#ficha').hidden = true; return; }
+        const b = e.target.closest('[data-h]'); if (b) abrir(b.dataset.h);
+      };
+      document.addEventListener('keydown', e => { if (e.key === 'Escape') $('#ficha').hidden = true; });
+
+      dibujar();
+      if (document.fonts) document.fonts.ready.then(() => requestAnimationFrame(lineas));
+      const pedida = param('h'); if (pedida) abrir(pedida);
+    }
+  </script>
+</body>
+</html>

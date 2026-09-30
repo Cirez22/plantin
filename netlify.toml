@@ -1,0 +1,5 @@
+# Netlify publica solo la web pública: las páginas, css/, js/ e img/.
+# (El README y cualquier otro archivo del repo no quedan accesibles en el sitio.)
+[build]
+  command = "rm -rf dist && mkdir dist && cp *.html dist/ && cp -r css js img dist/"
+  publish = "dist"

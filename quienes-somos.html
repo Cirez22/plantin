@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Quiénes somos — Plantín</title>
+  <meta name="theme-color" content="#0d2419">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%230d2419'/><text x='50' y='68' font-size='58' text-anchor='middle' fill='%23f4efe4' font-family='Georgia,serif' font-style='italic'>P</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <main>
+    <section class="page-head wrap qs-head">
+      <span class="eyebrow">Quiénes somos</span>
+      <h1>Un proyecto <em>de barrio</em>, hecho a mano.</h1>
+      <span class="qs-deco q1" data-forma="scallop" data-color="#A9552F" aria-hidden="true"></span>
+      <span class="qs-deco q2" data-forma="star" data-color="#D4A03A" aria-hidden="true"></span>
+    </section>
+
+    <section class="wrap about">
+      <div class="txt">
+        <figure class="archivo reveal">
+          <span class="print-sticker" aria-hidden="true"><span data-forma="scallop" data-color="#D4A03A"></span><i>orquídeas<br>desde siempre</i></span>
+          <div class="print"><img src="img/toto-lg.jpg" alt="Mi abuelo Toto mirando una orquídea en flor, rodeado de sus plantas"></div>
+          <figcaption>Mi abuelo Toto.</figcaption>
+        </figure>
+        <p>Mi abuelo Toto era fanático de las plantas, y sobre todo de las orquídeas. Llegó a cultivar miles, de todo tipo y tamaño, y hasta creó sus propios híbridos cruzándolas él mismo. De ahí viene esto.</p>
+        <p>Plantín arrancó con una pregunta simple: ¿por qué para comprar una planta hay que recorrer cinco viveros o revolver Instagram, si cada uno ya tiene su catálogo? La idea es juntar lo que cada vivero ya vende en un solo lugar, prolijo y fácil de buscar, y que la venta siga siendo como siempre: entre el vivero y su cliente, por WhatsApp.</p>
+        <p>No somos una tienda, ni un delivery, ni una app con inversores. Somos un directorio que se arma vivero por vivero, en persona, mirando el local y las plantas. Estamos empezando por CABA y Zona Norte: si tenés un vivero y te interesa, dejanos tus datos acá al lado y te vamos a visitar.</p>
+        <div class="sig"><b>Matías</b>Plantín · Buenos Aires</div>
+      </div>
+
+      <div class="form-card" id="sumate">
+        <span class="eyebrow">Agregá tu vivero</span>
+        <h2>Contanos quién sos y te vamos a ver.</h2>
+        <p class="sub">Sin costo para arrancar y sin comisión sobre ventas. Vos ponés las plantas, nosotros armamos la ficha.</p>
+        <form id="form" novalidate>
+          <div class="field"><label for="nombre">Tu nombre</label><input id="nombre" name="nombre" placeholder="Ej.: Marta Bianchi" required></div>
+          <div class="field"><label for="vivero">Nombre del vivero</label><input id="vivero" name="vivero" placeholder="Ej.: Vivero Don Aurelio" required></div>
+          <div class="field"><label for="wsp">WhatsApp</label><input id="wsp" name="wsp" type="tel" inputmode="tel" placeholder="Ej.: 11 5555 5555" required></div>
+          <div class="field"><label for="zona">Zona</label>
+            <select id="zona" name="zona">
+              <option value="CABA">CABA</option>
+              <option value="Zona Norte">Zona Norte</option>
+              <option value="Otra">Otra</option>
+            </select>
+          </div>
+          <button class="btn btn-light btn-lg btn-block" type="submit">Agregar mi vivero</button>
+          <p class="fine">Te escribimos por WhatsApp en los próximos días para coordinar una visita. No compartimos tus datos con nadie.</p>
+        </form>
+        <div class="form-ok" id="ok" hidden>
+          <h3>¡Gracias!</h3>
+          <p id="okMsg"></p>
+          <p style="margin-top:18px"><a class="btn btn-light" id="okWa" href="#" target="_blank" rel="noopener">Mandarnos el mensaje por WhatsApp</a></p>
+          <p class="fine">Si el chat no se abrió solo, tocá el botón.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="valores">
+      <div class="wrap">
+        <div class="sec-head"><h2>Lo que <em>nos importa</em></h2></div>
+        <div class="valores-grid">
+          <div class="valor v1"><span data-forma="star" data-color="#14241A"></span><h3>Viveros de barrio</h3><p>Juntamos a los viveros de siempre, los que conocen cada planta. No depósitos ni revendedores.</p></div>
+          <div class="valor v2"><span data-forma="wavy" data-color="#14241A"></span><h3>Sin comisión</h3><p>El vivero pone sus precios y se queda con todo lo que vende por acá.</p></div>
+          <div class="valor v3"><span data-forma="scallop" data-color="#14241A"></span><h3>Trato directo</h3><p>Le escribís al vivero por WhatsApp y coordinás con ellos. El cliente es suyo.</p></div>
+          <div class="valor v4"><span data-forma="clover" data-color="#14241A"></span><h3>Aprender de plantas</h3><p>Como hacía Toto: mirarlas, entenderlas y compartirlas. <a href="comunidad.html">Por eso armamos el árbol →</a></p></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/logo.js"></script>
+  <script>
+    function initPage() {
+      const form = $('#form');
+      form.addEventListener('submit', e => {
+        e.preventDefault();
+        const d = Object.fromEntries(new FormData(form).entries());
+        const faltan = ['nombre', 'vivero', 'wsp'].filter(k => !d[k] || !d[k].trim());
+        if (faltan.length) { $('#' + faltan[0]).focus(); toast('Completá tu nombre, el vivero y tu WhatsApp.'); return; }
+
+        // Sin backend: el "envío" es un mensaje de WhatsApp al número de Plantín con los datos cargados.
+        const msg = `Hola Plantín! Soy ${d.nombre.trim()} de ${d.vivero.trim()} (${d.zona}). Quiero agregar mi vivero a Plantín. Mi WhatsApp: ${d.wsp.trim()}.`;
+        const link = waLink(PLANTIN_WHATSAPP, msg);
+        Metricas.registrar('form_vivero', { zona: d.zona });
+        try { localStorage.setItem('plantin_lead', JSON.stringify({ ...d, fecha: new Date().toISOString() })); } catch {}
+        $('#okMsg').textContent = `${d.nombre.trim()}, anotamos a ${d.vivero.trim()}. Te escribimos en los próximos días.`;
+        $('#okWa').href = link;
+        form.hidden = true; $('#ok').hidden = false;
+        window.open(link, '_blank', 'noopener');
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Plantín — El mundo de las plantas</title>
+  <meta name="description" content="El catálogo de los viveros de CABA y Zona Norte en un solo lugar. Elegís la planta y le pedís directo al vivero por WhatsApp.">
+  <meta name="theme-color" content="#0d2419">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%230d2419'/><text x='50' y='68' font-size='58' text-anchor='middle' fill='%23f4efe4' font-family='Georgia,serif' font-style='italic'>P</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <script>
+    // Splash sólo la primera vez en la sesión
+    try { if (!sessionStorage.getItem('plantin_splash') && !location.search.includes('nosplash')) { document.body.classList.add('splash-on'); sessionStorage.setItem('plantin_splash', '1'); } } catch (e) {}
+  </script>
+  <div class="splash" id="splash" hidden aria-hidden="true">
+    <div class="lockup" id="lockup"><span class="mk" id="mk" aria-hidden="true"></span><span class="word">Plantín</span></div>
+    <div class="sub">Bienvenido a Plantín, <em>el mundo de las plantas.</em></div>
+  </div>
+
+  <script>if (document.body.classList.contains('splash-on')) document.getElementById('splash').hidden = false;</script>
+
+  <main>
+    <section class="hero2">
+      <div class="hero2-bg" id="heroBg" aria-hidden="true"></div>
+      <div class="wrap hero2-grid">
+        <div class="hero2-txt">
+          <span class="eyebrow reveal">Viveros de CABA y Zona Norte</span>
+          <h1 class="reveal d1">Plantas <span class="ish" data-forma="star" data-color="#D4A03A"></span> de viveros <em>de verdad,</em> cerca <span class="ish" data-forma="wavy" data-color="#8fa88f"></span> tuyo.</h1>
+          <p class="lead reveal d2">Juntamos los catálogos de los viveros de barrio. Elegís la planta, ves quién la cultiva y le escribís directo por WhatsApp. Sin intermediarios: el vivero te cobra y te la entrega.</p>
+          <div class="search-row reveal d3">
+            <form class="search" id="searchForm" autocomplete="off">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+              <input type="search" id="q" placeholder="Buscá una planta, un vivero o un barrio…" aria-label="Buscar">
+              <div class="search-results" id="searchResults"></div>
+            </form>
+            <div class="zona-toggle" id="zonaToggle" role="group" aria-label="Zona">
+              <button data-z="todas">Todas</button>
+              <button data-z="caba">CABA</button>
+              <button data-z="norte">Zona Norte</button>
+            </div>
+          </div>
+          <div class="hero2-facts reveal d3" id="facts"></div>
+        </div>
+        <div class="hero2-art" id="heroArt" aria-hidden="true"></div>
+      </div>
+    </section>
+
+    <section class="wrap sec-head">
+      <h2>¿Qué estás <em>buscando?</em></h2>
+      <a class="link-arrow" href="categoria.html">Ver todo el catálogo →</a>
+    </section>
+    <section class="wrap">
+      <div class="tiles" id="tiles"></div>
+    </section>
+
+    <section class="pasos">
+      <div class="wrap">
+        <div class="sec-head">
+          <h2>Así de <em>simple</em></h2>
+          <a class="link-arrow" href="como-funciona.html">Cómo funciona →</a>
+        </div>
+        <div class="pasos-grid">
+          <div class="paso p1">
+            <span class="paso-n"><span data-forma="star" data-color="#14241A"></span><b>1</b></span>
+            <h3>Buscás la planta</h3>
+            <p>Por nombre, por categoría o por zona. Ves la foto y de qué vivero es.</p>
+          </div>
+          <div class="paso p2">
+            <span class="paso-n"><span data-forma="scallop" data-color="#14241A"></span><b>2</b></span>
+            <h3>Ves quién la cultiva</h3>
+            <p>Cada planta dice de qué vivero es y dónde queda. Entrás a su catálogo y ahí ves los precios.</p>
+          </div>
+          <div class="paso p3">
+            <span class="paso-n"><span data-forma="clover" data-color="#14241A"></span><b>3</b></span>
+            <h3>Le escribís directo</h3>
+            <p>Armás el pedido y se abre el WhatsApp del vivero con el mensaje listo. Pago y entrega, con ellos.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="viveros-band">
+      <div class="wrap">
+        <div class="sec-head">
+          <div>
+            <span class="eyebrow">Los viveros</span>
+            <h2>Detrás de cada planta <em>hay un vivero.</em></h2>
+          </div>
+          <a class="link-arrow" href="viveros.html">Conocelos a todos →</a>
+        </div>
+        <div class="vgrid" id="viverosHome"></div>
+      </div>
+    </section>
+
+    <section class="teaser-arbol">
+      <div class="wrap teaser-inner">
+        <div>
+          <span class="eyebrow">Comunidad</span>
+          <h2>El árbol de <em>las plantas.</em></h2>
+          <p>¿Sabías que la monstera y la zamioculca son de la misma familia? ¿Y que el senecio es pariente del girasol? Tocá las hojas, aprendé de dónde viene cada planta y armá tu árbol.</p>
+          <a class="btn btn-lg" href="comunidad.html">Explorar el árbol</a>
+        </div>
+        <div class="teaser-art" id="teaserArbol" aria-hidden="true"></div>
+      </div>
+    </section>
+
+    <section class="cta-band">
+      <div class="wrap cta-inner">
+        <span class="cta-deco d1" data-forma="scallop" data-color="#A9552F"></span>
+        <span class="cta-deco d2" data-forma="wavy" data-color="#F4F2ED"></span>
+        <div>
+          <span class="eyebrow">¿Tenés un vivero?</span>
+          <h2>Agregá tu vivero <em>a Plantín.</em></h2>
+          <p>Te armamos la ficha con tus fotos y precios, y los pedidos te llegan directo a tu WhatsApp. Sin comisión.</p>
+        </div>
+        <a class="btn btn-lg" href="quienes-somos.html#sumate">Agregar mi vivero</a>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/logo.js"></script>
+  <script src="js/carteles.js"></script>
+  <script src="js/splash.js"></script>
+  <script>
+    function initPage() {
+      // Zona
+      const toggle = $('#zonaToggle');
+      const paintZona = () => $$('button', toggle).forEach(b => b.classList.toggle('on', b.dataset.z === Zona.get()));
+      toggle.onclick = e => { const b = e.target.closest('button'); if (!b) return; Zona.set(b.dataset.z); paintZona(); renderTiles(); };
+      paintZona();
+
+      // Tiles
+      function renderTiles() {
+        const z = Zona.get();
+        $('#tiles').innerHTML = CATEGORIAS.filter(c => c.tapa !== false).map(c => {
+          const items = filterByZona(PLANTAS.filter(p => p.cat === c.id), z);
+          const n = items.length, m = new Set(items.map(p => p.vivero)).size;
+          return `
+            <a class="tile" style="--cat:${c.color}" href="categoria.html?c=${c.id}" aria-label="${c.nombre}: ${n} ${n === 1 ? 'producto' : 'productos'}">
+              <img src="${img(c.img, 'lg')}" alt="${c.latin}" style="object-position: center ${c.pos}">
+              <div class="bottom">
+                <h2 class="label">${c.nombre}${c.nombre.length <= 8 ? `<span class="label-forma">${forma(c.forma, c.color)}</span>` : ''}</h2>
+                <div class="row">
+                  <span class="latin">${c.latin}</span>
+                  <span class="note">${n} ${n === 1 ? 'producto' : 'productos'} · ${m} ${m === 1 ? 'vivero' : 'viveros'}</span>
+                </div>
+              </div>
+            </a>`;
+        }).join('') + tileTodo(z);
+      }
+      // Portada extra: todos los productos, con las cuatro familias del logo
+      function tileTodo(z) {
+        const items = filterByZona(PLANTAS, z), m = new Set(items.map(p => p.vivero)).size;
+        return `
+          <a class="tile tile-todo" href="categoria.html" aria-label="Todos los productos: ${items.length}">
+            <div class="todo-mk">${Logo.familias1c().map(([d, f]) => `<svg viewBox="0 0 100 100"><path d="${d}" fill="${f}"/></svg>`).join('')}</div>
+            <div class="bottom">
+              <h2 class="label">Todo</h2>
+              <div class="row">
+                <span class="latin">Todos los productos</span>
+                <span class="note">${items.length} productos · ${m} viveros</span>
+              </div>
+            </div>
+          </a>`;
+      }
+      renderTiles();
+
+      // Buscador con sugerencias
+      const q = $('#q'), box = $('#searchResults');
+      q.addEventListener('input', () => {
+        const res = searchPlantas(q.value);
+        if (!res.length) { box.classList.remove('open'); box.innerHTML = ''; return; }
+        box.innerHTML = res.slice(0, 5).map(p => {
+          const v = vivero(p.vivero);
+          return `<a href="planta.html?id=${p.id}"><img src="${img(p.img)}" alt=""><div><div class="n">${p.nombre} ${tagEjemplo(p)}</div><div class="m">${v.nombre} · ${v.barrio}</div></div></a>`;
+        }).join('') + `<a class="all" href="categoria.html?q=${encodeURIComponent(q.value)}">Ver los ${res.length} resultados →</a>`;
+        box.classList.add('open');
+      });
+      $('#searchForm').addEventListener('submit', e => { e.preventDefault(); if (q.value.trim()) location.href = `categoria.html?q=${encodeURIComponent(q.value.trim())}`; });
+      document.addEventListener('click', e => { if (!e.target.closest('.search')) box.classList.remove('open'); });
+
+      // Datos rápidos debajo del buscador
+      $('#facts').innerHTML = [
+        [VIVEROS.length, 'viveros'], [PLANTAS.length, 'productos'], ['0%', 'comisión'],
+      ].map(([n, t], i) => `<span>${forma(['star', 'scallop', 'clover'][i], ['#D4A03A', '#A9552F', '#76866A'][i])}<b>${n}</b> ${t}</span>`).join('');
+
+      // Fondo del hero: estampado tenue con las formas del logo
+      const motivos = [['star', 40, 60, 0], ['wavy', 170, 30, 20], ['scallop', 110, 150, -10], ['clover', 230, 170, 30], ['spiky', 20, 220, 15]];
+      $('#heroBg').innerHTML = `<svg width="100%" height="100%"><defs><pattern id="heroPat" width="280" height="280" patternUnits="userSpaceOnUse">${
+        motivos.map(([f, x, y, r]) => `<path d="${Logo.P[f]}" fill="#f4efe4" transform="translate(${x} ${y}) rotate(${r} 18 18) scale(.36)"/>`).join('')
+      }</pattern></defs><rect width="100%" height="100%" fill="url(#heroPat)"/></svg>`;
+
+      // Collage del hero: fotos en formas de la familia + sticker que gira
+      const destacada = planta('monstera-deliciosa');
+      $('#heroArt').innerHTML = `
+        <div class="art-sol">${forma('wavy', '#D4A03A')}</div>
+        <div class="art-arch"><img src="${img('monstera', 'lg')}" alt=""></div>
+        <svg class="art-scallop" viewBox="0 0 100 100"><defs><clipPath id="clipScallop"><path d="${Logo.P.scallop}"/></clipPath></defs>
+          <image href="${img('echeveria-mix', 'lg')}" width="100" height="100" preserveAspectRatio="xMidYMid slice" clip-path="url(#clipScallop)"/></svg>
+        <div class="art-round"><img src="${img('phalaenopsis-rosa', 'lg')}" alt=""></div>
+        <div class="art-sticker">
+          <svg viewBox="0 0 200 200"><defs><path id="circTxt" d="M100,100 m-74,0 a74,74 0 1,1 148,0 a74,74 0 1,1 -148,0"/></defs>
+            <text><textPath href="#circTxt">viveros de barrio · pedido directo · sin comisión · </textPath></text></svg>
+          ${forma('star', '#A9552F', 'art-star')}
+        </div>
+        <a class="art-tag" href="planta.html?id=${destacada.id}"><b>${destacada.nombre} ${tagEjemplo(destacada)}</b><span>${vivero(destacada.vivero).nombre} · ${vivero(destacada.vivero).barrio}</span></a>
+        ${forma('clover', '#76866A', 'art-deco a1')}${forma('wavy', '#C98A5E', 'art-deco a2')}`;
+
+      // Adelanto del árbol: tronco que nace en la banda de abajo, ramas y hojas con las formas del logo.
+      // Coordenadas en un viewBox de 500×540; la franja de 460 a 540 (raíces) cae sobre la banda mostaza.
+      const hojasT = [
+        ['wavy', '#2E6B3E', 'Monstera', 92, 250], ['scallop', '#A9552F', 'Phalaenopsis', 408, 222],
+        ['star', '#D4A03A', 'Girasol', 150, 108], ['spiky', '#C98A5E', 'Cereus', 356, 84], ['clover', '#76866A', 'Helecho', 252, 40],
+      ];
+      const hojita = (x, y, r) => `<ellipse cx="${x}" cy="${y}" rx="15" ry="6.5" transform="rotate(${r} ${x} ${y})"/>`;
+      $('#teaserArbol').innerHTML = `
+        <svg viewBox="0 0 500 540" class="teaser-svg">
+          <g class="t-ramas">
+            <path class="t-tronco" d="M250 540 C246 480 256 420 250 370 C246 330 254 300 250 262"/>
+            <path d="M249 392 C200 372 118 356 96 290"/>
+            <path d="M251 352 C300 332 392 320 406 262"/>
+            <path d="M250 300 C228 250 162 212 152 146"/>
+            <path d="M251 290 C276 240 346 190 356 122"/>
+            <path d="M250 268 C252 200 248 130 252 80"/>
+          </g>
+          <g class="t-hojitas">${hojita(168, 360, -20)}${hojita(330, 330, 25)}${hojita(196, 238, -55)}${hojita(318, 214, 50)}${hojita(238, 180, -80)}${hojita(126, 318, -35)}</g>
+          <g class="t-raices"><path d="M250 470 C230 492 196 500 170 520 M250 480 C272 500 306 506 334 526 M250 488 C246 510 238 522 232 540 M252 476 C282 486 300 480 318 470"/></g>
+        </svg>
+        ${hojasT.map(([f, c, n, x, y], i) => `
+          <span class="t-hoja" style="left:${x / 5}%; top:${y / 5.4}%; --c:${c}; --d:${i * .35}s">${forma(f, c)}<b>${n}</b></span>`).join('')}`;
+
+      // Viveros destacados
+      $('#viverosHome').innerHTML = VIVEROS.map(viveroCard).join('');
+    }
+  </script>
+</body>
+</html>

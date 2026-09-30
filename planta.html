@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Planta — Plantín</title>
+  <meta name="theme-color" content="#0d2419">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%230d2419'/><text x='50' y='68' font-size='58' text-anchor='middle' fill='%23f4efe4' font-family='Georgia,serif' font-style='italic'>P</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <main>
+    <section class="pd-wrap"><div class="wrap" id="detail"></div></section>
+    <section class="pd-related"><div class="wrap" id="related"></div></section>
+  </main>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/logo.js"></script>
+  <script src="js/arbol.js"></script>
+  <script src="js/carteles.js"></script>
+  <script>
+    function initPage() {
+      const p = planta(param('id'));
+      if (!p) { $('#detail').innerHTML = `<div class="empty"><h3>No encontramos esa planta.</h3><p><a class="btn btn-ghost" href="categoria.html">Ver el catálogo</a></p></div>`; return; }
+      const v = vivero(p.vivero), c = categoria(p.cat);
+      document.title = `${p.nombre} — ${v.nombre} · Plantín`;
+
+      const catalogo = PLANTAS.filter(x => x.vivero === v.id);
+      const numero = String(catalogo.indexOf(p) + 1).padStart(2, '0');
+      const fotos = p.fotos && p.fotos.length ? p.fotos : [p.img];
+      const pad = n => String(n).padStart(2, '0');
+      const mes = new Date().toLocaleDateString('es-AR', { month: 'long', year: 'numeric' });
+      let foto = 0;
+      let tam = p.tamanos ? Math.max(0, p.tamanos.findIndex(t => t.precio === p.precio)) : null;
+      let qty = 1;
+      const precioActual = () => (tam != null ? p.tamanos[tam].precio : p.precio);
+      const tamActual = () => (tam != null ? p.tamanos[tam].tam : p.tam);
+
+      // Su lugar en el árbol de la comunidad (cactus crestado → misma hoja que el cereus)
+      const enArbol = HOJAS.find(h => h.planta === p.id) || (p.id === 'cactus-crestado' ? HOJAS.find(h => h.id === 'cereus') : null);
+      $('#detail').innerHTML = `
+        <div class="pd">
+          <div class="pd-gallery">
+            <div class="pd-counter tx-mono" id="counter">${pad(1)} / ${pad(fotos.length)}</div>
+            <a class="pd-cat" href="categoria.html?c=${c.id}" style="--cat:${c.color}">${forma(c.forma, c.color)}${c.nombre}</a>
+            <figure class="pd-photo">
+              <span class="pd-sticker" style="--cat:${c.color}">${forma(c.forma, c.color)}</span>
+              <img id="mainPhoto" src="${img(fotos[0], 'lg')}" alt="${p.nombre}">
+              <figcaption class="tx-mono" id="caption"></figcaption>
+            </figure>
+            <div class="pd-thumbs" id="thumbs">
+              ${fotos.map((f, i) => `<button class="${i === 0 ? 'on' : ''}" data-i="${i}" aria-label="Foto ${i + 1}"><img src="${img(f)}" alt=""></button>`).join('')}
+            </div>
+            <div class="pd-gfoot tx-mono">
+              <span>${p.img.startsWith('ilus-') ? 'Ilustración' : `Fotos del vivero · ${mes}`}</span>
+              <span class="pd-nav"><button id="prev">← Anterior</button><button id="next">Siguiente →</button></span>
+            </div>
+          </div>
+
+          <div class="pd-info">
+            <div class="pd-title">
+              <div>
+                <h1>${p.nombre}</h1>${tagEjemplo(p)}
+                <div class="pd-latin">${p.latin || ''}</div>
+              </div>
+              <div class="pd-num" title="Número en el catálogo de ${v.nombre}">${forma(c.forma, c.color)}<b>${numero}</b></div>
+            </div>
+            <div class="pd-stock tx-mono"><i></i>${p.servicio ? 'Servicio · se coordina por WhatsApp' : 'Consultar disponibilidad'}</div>
+            <p class="pd-desc">${p.desc}</p>
+
+            ${p.servicio ? `
+            <div class="pd-buy">
+              <div class="pd-price"><span class="lbl tx-mono">Precio</span><b class="tx-mono">A consultar</b></div>
+            </div>
+            <div class="pd-actions pd-actions-serv">
+              <a class="pd-add pd-consultar tx-mono" id="consultar" href="${waLink(v.whatsapp, `Hola ${v.nombre}! Vi en Plantín su servicio de ${p.nombre.toLowerCase()} y quería consultar precio y disponibilidad.`)}" target="_blank" rel="noopener">${ICON.wa}Consultar por WhatsApp</a>
+            </div>` : `
+            <div class="pd-buy">
+              <div class="pd-price">
+                <span class="lbl tx-mono">Precio del vivero</span>
+                <b class="tx-mono" id="price">${fmt(precioActual())}</b>
+              </div>
+              ${p.tamanos ? `
+              <div class="pd-sizes">
+                <span class="lbl tx-mono">Tamaño</span>
+                <div class="chips" id="sizes">${p.tamanos.map((t, i) => `<button class="tx-mono ${i === tam ? 'on' : ''}" data-i="${i}">${t.n}</button>`).join('')}</div>
+              </div>` : ''}
+            </div>
+            <div class="pd-actions">
+              <div class="pd-qty tx-mono"><button id="minus" aria-label="Menos">−</button><span id="qty">1</span><button id="plus" aria-label="Más">+</button></div>
+              <button class="pd-add tx-mono" id="add">Agregar al carrito</button>
+            </div>`}
+
+            ${p.luz ? `
+            <div class="pd-cuidados">
+              <div class="cui c-luz">${forma('star', '#14241A')}<span class="tx-mono">Luz</span><b>${p.luz}</b></div>
+              <div class="cui c-riego">${forma('wavy', '#14241A')}<span class="tx-mono">Riego</span><b>${p.riego}</b></div>
+              ${p.dificultad ? `<div class="cui c-dif">${forma('scallop', '#14241A')}<span class="tx-mono">Dificultad</span><b>${p.dificultad}</b></div>` : ''}
+            </div>` : ''}
+
+            <dl class="pd-specs">
+              <div><dt class="tx-mono">${p.servicio ? 'Modalidad' : 'Tamaño'}</dt><dd id="specTam">${tamActual()}</dd></div>
+              ${p.alcance ? `<div><dt class="tx-mono">Dónde</dt><dd>${p.alcance}</dd></div>` : ''}
+              ${p.maceta ? `<div><dt class="tx-mono">Maceta</dt><dd>${p.maceta}</dd></div>` : ''}
+              ${p.servicio ? '' : `<div><dt class="tx-mono">Entrega</dt><dd>La coordina el vivero por WhatsApp · ${ZONAS[v.zona]}</dd></div>`}
+            </dl>
+
+            ${enArbol ? `
+            <a class="pd-familia" href="comunidad.html?h=${enArbol.id}" style="--c:${enArbol.rama.color}">
+              <span class="pf-forma">${forma(enArbol.rama.forma, enArbol.rama.color)}</span>
+              <span class="tx-mono pf-lbl">Su familia en el árbol · ${enArbol.familia.familia}</span>
+              <b>${enArbol.familia.apodo}</b>
+              <span class="pf-dato">${enArbol.dato}</span>
+              <span class="tx-mono pf-go">Ver sus parientes →</span>
+            </a>` : ''}
+
+            <a class="pd-seller" href="vivero.html?id=${v.id}" style="${marcaVars(v)}">
+              <div class="top">
+                <span class="sigla">${v.sigla}</span>
+                <div><span class="lbl tx-mono">${p.servicio ? 'Lo hace' : 'La vende'}</span><b>${v.nombre}</b> ${tagEjemplo(v)}</div>
+                <span class="go tx-mono">Ver ficha →</span>
+              </div>
+              <p>${v.barrio}, ${ZONAS[v.zona]} · ${v.anios} años en el rubro. Coordina la entrega y el pago con vos por WhatsApp.</p>
+            </a>
+          </div>
+        </div>`;
+
+      // Galería
+      function showFoto(i) {
+        foto = (i + fotos.length) % fotos.length;
+        $('#mainPhoto').src = img(fotos[foto], 'lg');
+        $('#counter').textContent = `${pad(foto + 1)} / ${pad(fotos.length)}`;
+        $('#caption').textContent = p.servicio ? 'Servicio del vivero' : foto === 0 ? `Planta completa · ${tamActual()}` : `Detalle · foto ${foto + 1}`;
+        $$('#thumbs button').forEach(b => b.classList.toggle('on', Number(b.dataset.i) === foto));
+      }
+      showFoto(0);
+      $('#thumbs').onclick = e => { const b = e.target.closest('button'); if (b) showFoto(Number(b.dataset.i)); };
+      $('#prev').onclick = () => showFoto(foto - 1);
+      $('#next').onclick = () => showFoto(foto + 1);
+
+      // Tamaño
+      const sizes = $('#sizes');
+      if (sizes) sizes.onclick = e => {
+        const b = e.target.closest('button'); if (!b) return;
+        tam = Number(b.dataset.i);
+        $$('button', sizes).forEach(x => x.classList.toggle('on', x === b));
+        $('#price').textContent = fmt(precioActual());
+        $('#specTam').textContent = tamActual();
+        if (foto === 0) showFoto(0);
+      };
+
+      // Cantidad y carrito (los servicios no van al carrito: se consultan por WhatsApp)
+      if (p.servicio) $('#consultar').addEventListener('click', () => Metricas.registrar('consulta_whatsapp', { vivero: v.id, servicio: p.id }));
+      else {
+      const paintQty = () => { $('#qty').textContent = qty; };
+      $('#minus').onclick = () => { qty = Math.max(1, qty - 1); paintQty(); };
+      $('#plus').onclick = () => { qty = Math.min(20, qty + 1); paintQty(); };
+      $('#add').onclick = () => {
+        Cart.add(p.id, qty, tam);
+        Metricas.registrar('carrito_agregar', { id: p.id, vivero: v.id, qty, precio: precioActual() });
+        const nombre = p.nombre + (tam != null ? ` (${p.tamanos[tam].n})` : '');
+        toast(`<span>${qty}x ${nombre} en el carrito.</span><a href="carrito.html">Ver carrito →</a>`);
+        qty = 1; paintQty();
+      };
+      }
+
+      Metricas.registrar('ver_planta', { id: p.id, vivero: v.id, cat: p.cat });
+
+      // Del mismo vivero
+      const otras = ordenar(catalogo.filter(x => x.id !== p.id), 'destacados').slice(0, 4);
+      const celdas = otras.map(x => `
+        <a class="rel" href="planta.html?id=${x.id}">
+          <div class="ph"><img src="${img(x.img)}" alt="${x.nombre}" loading="lazy"></div>
+          <div class="n">${x.nombre} ${tagEjemplo(x)}</div>
+          <div class="pr tx-mono">${x.servicio ? 'A consultar' : fmt(x.precio)}</div>
+        </a>`);
+      while (celdas.length < 4) celdas.push('<div class="rel empty"></div>');
+      $('#related').innerHTML = `
+        <div class="rel-head">
+          <h2>Del mismo <em>vivero</em> <span class="rel-formas" aria-hidden="true">${forma('star', '#D4A03A')}${forma('scallop', '#A9552F')}${forma('clover', '#76866A')}</span></h2>
+          <a class="tx-mono" href="vivero.html?id=${v.id}">${v.nombre} · ${pad(catalogo.length)}</a>
+        </div>
+        <div class="rel-grid">${celdas.join('')}</div>`;
+    }
+  </script>
+</body>
+</html>

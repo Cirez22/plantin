@@ -1,0 +1,12 @@
+# Interno: no va al repo público
+proximamente/
+# Originales de fotos y referencias de diseño (pesados, el sitio no los usa)
+imgs/
+diseño/
+# Copias/salidas generadas
+deploy/
+dist/
+# Sistema
+.DS_Store
+Thumbs.db
+desktop.ini

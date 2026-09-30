@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Viveros — Plantín</title>
+  <meta name="theme-color" content="#0d2419">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%230d2419'/><text x='50' y='68' font-size='58' text-anchor='middle' fill='%23f4efe4' font-family='Georgia,serif' font-style='italic'>P</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <main>
+    <section class="wrap dir-head">
+      <div class="dir-top"><span>Directorio de viveros</span><span id="count"></span></div>
+      <div class="dir-title">
+        <h1>Viveros<span class="dir-formas" aria-hidden="true"><span data-forma="star" data-color="#D4A03A"></span><span data-forma="scallop" data-color="#A9552F"></span><span data-forma="clover" data-color="#76866A"></span></span></h1>
+        <p>Cada vivero tiene su especialidad y su cartel. Entrá a uno para ver su catálogo y escribirle directo.</p>
+      </div>
+      <div class="dir-chips" id="zonaPills">
+        <button class="chip" data-z="todas">Todas</button>
+        <button class="chip" data-z="caba">CABA</button>
+        <button class="chip" data-z="norte">Zona Norte</button>
+        <button class="chip" id="mayChip" aria-pressed="false">Venta por mayor</button>
+        <a class="chip chip-link" href="quienes-somos.html#sumate">¿Tenés un vivero? Agregalo →</a>
+      </div>
+    </section>
+    <section class="wrap">
+      <div class="vgrid" id="list"></div>
+    </section>
+
+    <section class="cta-band">
+      <div class="wrap cta-inner">
+        <span class="cta-deco d1" data-forma="wavy" data-color="#A9552F"></span>
+        <div>
+          <span class="eyebrow">¿Tenés un vivero?</span>
+          <h2>Tu cartel <em>puede estar acá.</em></h2>
+          <p>Te armamos la ficha con tus fotos, tus precios y tu identidad. Los pedidos te llegan directo a tu WhatsApp, sin comisión.</p>
+        </div>
+        <a class="btn btn-lg" href="quienes-somos.html#sumate">Agregar mi vivero</a>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/logo.js"></script>
+  <script src="js/carteles.js"></script>
+  <script>
+    function initPage() {
+      const pills = $('#zonaPills');
+      let soloMayorista = false;
+      const paint = () => {
+        $$('button[data-z]', pills).forEach(b => b.classList.toggle('on', b.dataset.z === Zona.get()));
+        $('#mayChip').classList.toggle('on', soloMayorista);
+        $('#mayChip').setAttribute('aria-pressed', soloMayorista);
+      };
+      pills.onclick = e => {
+        const b = e.target.closest('button.chip'); if (!b) return;
+        if (b.id === 'mayChip') soloMayorista = !soloMayorista; else Zona.set(b.dataset.z);
+        paint(); render();
+      };
+      paint();
+      function render() {
+        const z = Zona.get();
+        const list = VIVEROS.filter(v => (z === 'todas' || v.zona === z) && (!soloMayorista || vendeMayorista(v)));
+        $('#count').textContent = `${String(list.length).padStart(2, '0')} ${list.length === 1 ? 'vivero' : 'viveros'} · ${Zona.label(z)}`;
+        $('#list').innerHTML = list.length ? list.map(viveroCard).join('') : `<p class="muted">Ningún vivero con esos filtros.</p>`;
+      }
+      render();
+    }
+  </script>
+</body>
+</html>

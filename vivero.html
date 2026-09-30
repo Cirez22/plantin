@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Vivero — Plantín</title>
+  <meta name="theme-color" content="#0d2419">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%230d2419'/><text x='50' y='68' font-size='58' text-anchor='middle' fill='%23f4efe4' font-family='Georgia,serif' font-style='italic'>P</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <main>
+    <div class="wrap vd" id="vd"></div>
+    <section class="vd-cat" id="vdCat">
+      <div class="wrap">
+        <div class="vd-cat-head" id="catHead"></div>
+        <div class="filtros" id="filtros"></div>
+        <div id="catalog"></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/logo.js"></script>
+  <script src="js/carteles.js"></script>
+  <script>
+    function initPage() {
+      const v = vivero(param('id'));
+      if (!v) { $('#vdCat').remove(); $('#vd').outerHTML = `<section class="wrap empty"><h3>No encontramos ese vivero.</h3><p><a class="btn btn-ghost" href="viveros.html">Ver todos los viveros</a></p></section>`; return; }
+      document.title = `${v.nombre} — Plantín`;
+      Metricas.registrar('ver_vivero', { id: v.id });
+
+      // La página entera toma la identidad del vivero
+      document.body.classList.add('marca');
+      document.body.style.cssText += marcaVars(v);
+      if (v.marca) $('meta[name="theme-color"]').content = v.marca.bg;
+
+      const plantas = ordenar(PLANTAS.filter(p => p.vivero === v.id), 'destacados');
+      const cats = CATEGORIAS.filter(c => plantas.some(p => p.cat === c.id));
+      const hola = `Hola ${v.nombre}! Los encontré en Plantín y quería hacerles una consulta.`;
+
+      $('#vd').innerHTML = `
+        <div class="vd-poster">${cartel(v)}</div>
+        <div class="vd-panel">
+          <a class="vd-back" href="viveros.html">← Todos los viveros</a>
+          <div class="vd-kicker">${v.especialidad} ${tagEjemplo(v)}</div>
+          <h1>${v.nombre}</h1>
+          <p class="vd-lead">${v.descripcion}</p>
+          <dl class="vd-stats">
+            <div><dt>Zona</dt><dd>${v.barrio} · ${ZONAS[v.zona]}</dd></div>
+            <div><dt>Dirección</dt><dd>${v.direccion}</dd></div>
+            <div><dt>Horario</dt><dd>${v.horario}</dd></div>
+            <div><dt>Entrega</dt><dd>${v.entrega}</dd></div>
+            <div><dt>En el rubro</dt><dd>${v.anios} años</dd></div>
+            <div><dt>Pedidos</dt><dd>Por WhatsApp, desde el carrito</dd></div>
+          </dl>
+          <a class="vd-wa" onclick="Metricas.registrar('consulta_whatsapp', { vivero: '${v.id}' })" href="${waLink(v.whatsapp, hola)}" target="_blank" rel="noopener">${ICON.wa}Escribirle por WhatsApp</a>
+        </div>`;
+
+      // El catálogo va abajo, a todo el ancho, para que los productos se vean grandes
+      $('#catHead').innerHTML = `<h2>Su catálogo</h2><span>${String(plantas.length).padStart(2, '0')} ${plantas.length === 1 ? 'producto' : 'productos'}</span>`;
+
+      // Filtros del catálogo en un botón "Filtros": categoría, precio y por mayor. Solo aparecen los grupos que tienen sentido.
+      const f = { cat: 'todas', precio: 'todos', mayorista: false };
+      const grupos = [];
+      if (cats.length > 1) grupos.push({ key: 'cat', label: 'Categoría', opciones: [{ v: 'todas', t: 'Todo' }, ...cats.map(c => ({ v: c.id, t: c.nombre }))] });
+      const precios = opcionesPrecio(plantas);
+      if (precios.length > 2) grupos.push({ key: 'precio', label: 'Precio', opciones: precios });
+      if (plantas.some(p => p.mayorista)) grupos.push({ key: 'mayorista', label: 'Pedido', toggle: true, opciones: [{ v: '1', t: 'Por mayor' }] });
+
+      const cuenta = n => `<span class="fcuenta">${n} de ${plantas.length}</span>`;
+      function renderCatalog() {
+        const rango = RANGOS_PRECIO.find(r => r.id === f.precio);
+        const list = plantas.filter(p =>
+          (f.cat === 'todas' || p.cat === f.cat) &&
+          (!rango || enRango(p.precio, rango)) &&
+          (!f.mayorista || p.mayorista));
+        barra.setDerecha(cuenta(list.length));
+        $('#catalog').innerHTML = list.length ? `
+          <div class="vd-grid">${list.map(p => `
+            <a class="vd-card" href="planta.html?id=${p.id}">
+              <div class="fr">${tagEjemplo(p, 'sobre-foto')}<img src="${img(p.img)}" ${srcset(p.img)} sizes="(max-width: 560px) 50vw, 420px" alt="${p.nombre}" loading="lazy"></div>
+              <div class="n">${p.nombre}</div>
+              <div class="p">${p.servicio ? '<span class="serv-tag">Servicio</span> A consultar' : fmt(p.precio)}</div>
+              ${p.mayorista ? `<div class="may">Por mayor: ${fmt(p.mayorista.precio)} c/u desde ${p.mayorista.min} u.</div>` : ''}
+            </a>`).join('')}
+          </div>` : plantas.length ? `<p class="vd-vacio">No hay productos con esos filtros.</p>` : `<p class="vd-vacio">Todavía no publicaron productos.</p>`;
+      }
+      const barra = grupos.length ? barraFiltros($('#filtros'), { grupos, estado: f, onChange: renderCatalog }) : { setDerecha() {} };
+      renderCatalog();
+    }
+  </script>
+</body>
+</html>

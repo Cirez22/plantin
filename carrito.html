@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Tu pedido — Plantín</title>
+  <meta name="theme-color" content="#0d2419">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%230d2419'/><text x='50' y='68' font-size='58' text-anchor='middle' fill='%23f4efe4' font-family='Georgia,serif' font-style='italic'>P</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <main>
+    <section class="page-head wrap">
+      <span class="eyebrow">Carrito</span>
+      <h1>Tu <em>pedido</em></h1>
+    </section>
+    <section class="wrap cart-page" id="cart"></section>
+  </main>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/logo.js"></script>
+  <script>
+    function initPage() { render(); }
+
+    function render() {
+      const items = Cart.read().map(lineInfo).filter(Boolean);
+      const box = $('#cart');
+      if (!items.length) {
+        box.innerHTML = `
+          <div class="cart-empty">
+            <h2>Todavía no agregaste nada.</h2>
+            <p class="muted">Cuando elijas plantas, acá se agrupan por vivero para que le mandes el pedido a cada uno.</p>
+            <p style="margin-top:22px"><a class="btn" href="index.html">Ir al catálogo</a></p>
+          </div>`;
+        return;
+      }
+
+      // Agrupar por vivero
+      const grupos = {};
+      items.forEach(l => { (grupos[l.p.vivero] = grupos[l.p.vivero] || []).push(l); });
+      const ids = Object.keys(grupos);
+
+      // Si hay plantas de más de un vivero, avisamos arriba y damos un botón de WhatsApp por vivero.
+      const aviso = ids.length > 1 ? `
+        <div class="cart-split" role="status">
+          <p><b>Armamos ${ids.length} pedidos</b> porque elegiste plantas de viveros distintos; vas a coordinar cada uno por separado.</p>
+          <div class="btns">${ids.map(id => {
+            const v = vivero(id);
+            return `<a class="btn btn-wa" data-pedido="${id}" href="${waLink(v.whatsapp, waMessage(v, grupos[id]))}" target="_blank" rel="noopener">${ICON.wa} ${v.nombre}</a>`;
+          }).join('')}</div>
+        </div>` : '';
+
+      const intro = aviso + `
+        <div class="cart-intro">
+          <p class="lead" style="margin:0">${ids.length > 1
+            ? `Abajo tenés el detalle de cada pedido. Cada vivero recibe solo lo suyo.`
+            : `Tu pedido va a <b>${vivero(ids[0]).nombre}</b>. Le mandás el mensaje y ellos te responden para coordinar.`}</p>
+          <p class="muted" style="margin:0">El pago y la entrega los arreglás directo con el vivero. Plantín no cobra nada en el medio.</p>
+        </div>`;
+
+      box.innerHTML = intro + ids.map(id => {
+        const v = vivero(id), lines = grupos[id];
+        const total = lines.reduce((a, l) => a + l.precio * l.qty, 0);
+        const msg = waMessage(v, lines);
+        return `
+          <div class="vblock" data-v="${id}">
+            <div class="vhead">
+              <span class="mono">${v.inicial}</span>
+              <div><div class="n">${v.nombre} ${tagEjemplo(v)}</div><div class="m">${v.barrio}, ${ZONAS[v.zona]}</div></div>
+              <span class="cnt">${lines.length} ${lines.length === 1 ? 'producto' : 'productos'}</span>
+            </div>
+            ${lines.map(l => `
+              <div class="line" data-key="${l.key}">
+                <img src="${img(l.p.img)}" alt="">
+                <div>
+                  <a class="n" href="planta.html?id=${l.p.id}">${l.p.nombre}${l.variante ? ` <small>· ${l.variante}</small>` : ''}</a>
+                  <div class="u">${fmt(l.precio)} c/u · ${l.tam}</div>
+                  <button class="rm" data-rm="${l.key}">Quitar</button>
+                </div>
+                <div class="qty"><button data-d="-1" aria-label="Menos">−</button><span>${l.qty}</span><button data-d="1" aria-label="Más">+</button></div>
+                <div class="sub">${fmt(l.precio * l.qty)}</div>
+              </div>`).join('')}
+            <div class="vfoot">
+              <div class="total">Total para ${v.nombre}<b>${fmt(total)}</b></div>
+              <a class="btn btn-wa btn-lg" data-pedido="${id}" href="${waLink(v.whatsapp, msg)}" target="_blank" rel="noopener">${ICON.wa} Enviar pedido por WhatsApp</a>
+            </div>
+            <div class="preview">${msg.replace(/</g, '&lt;')}</div>
+          </div>`;
+      }).join('') + `
+        <p class="muted" style="font-size:13px;margin-top:8px">Al tocar el botón se abre WhatsApp con el mensaje ya escrito. Lo podés editar antes de mandarlo.</p>`;
+
+      box.onclick = e => {
+        const ped = e.target.closest('[data-pedido]');
+        if (ped) {
+          const ls = grupos[ped.dataset.pedido];
+          Metricas.registrar('pedido_whatsapp', { vivero: ped.dataset.pedido, items: ls.map(l => ({ id: l.p.id, qty: l.qty, precio: l.precio })), total: ls.reduce((a, l) => a + l.precio * l.qty, 0) });
+          return;
+        }
+        const d = e.target.closest('[data-d]');
+        if (d) { const key = d.closest('.line').dataset.key; const cur = Cart.read().find(x => lineKey(x.id, x.t) === key); Cart.setQty(key, cur.qty + Number(d.dataset.d)); render(); return; }
+        const rm = e.target.closest('[data-rm]');
+        if (rm) { Cart.remove(rm.dataset.rm); render(); }
+      };
+    }
+  </script>
+</body>
+</html>
